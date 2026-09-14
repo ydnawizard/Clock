@@ -19,28 +19,14 @@ void String_Fetch(
 		uint8_t *** output_str,
 		uint8_t str_len
 		);
-void Cat_String_864(
-		uint8_t ** input_str,
-		uint64_t * output_str,
-		uint8_t str_len
-		);
 
 void Recursive_Scroll_Horizontal(
-		uint64_t ** input_str,
+		uint8_t ** input_str,
 		uint8_t str_len,
 		uint8_t start_chip,
 		uint8_t end_chip,
 		uint8_t speed
 		);
-
-void Recursive_Scroll_Horizontal_New(
-		uint64_t ** input_str,
-		uint8_t str_len,
-		uint8_t start_chip,
-		uint8_t end_chip,
-		uint8_t speed
-		);
-
 
 
 void Recursive_Ripple(

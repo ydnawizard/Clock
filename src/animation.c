@@ -3,9 +3,10 @@
 //Translates input string into characters from specified font
 void String_Fetch(char * input_str, uint8_t *** output_str, uint8_t str_len)
 {
+	(*output_str) = malloc(str_len * sizeof(uint8_t *));
 	for(uint8_t i = 0; i < str_len; i++)
 	{
-		(*output_str)[i] = calloc(8,str_len * sizeof(uint8_t));
+		(*output_str)[i] = malloc(8 * sizeof(uint8_t));
 		for(uint8_t k = 0; k < 8; k++)
 		{
 			(*output_str)[i][k] = standard_font_8[input_str[i] - 32][k];
@@ -13,52 +14,36 @@ void String_Fetch(char * input_str, uint8_t *** output_str, uint8_t str_len)
 	}
 }
 
-
-//Concatenates array of font characters into 8 row uint64_t array
-void Cat_String_864(uint8_t ** input_str, uint64_t * output_str, uint8_t str_len)
-{
-	for(uint8_t i = 0; i < 8; i++)
-	{
-		uint64_t placeholder = 0;
-		for(uint8_t j = 0; j < str_len; j++)
-		{
-			placeholder = (placeholder << 8) | (uint64_t)input_str[j][i];
-		}
-		output_str[i] = placeholder;
-	}
-}
-
-//Scrolls string of 64 bit rows from start to end 8 bit matrices
 void Recursive_Scroll_Horizontal(
-		uint64_t ** input_str, //Concatenated 64 bit 8 row string
-		uint8_t str_len,       //Input string length
-		uint8_t start_chip,    //Entry point for scroll animation
-		uint8_t end_chip,      //Exit point
-		uint8_t speed          //Speed for animation
+		uint8_t ** input_str,
+		uint8_t str_len,
+		uint8_t start_chip,
+		uint8_t end_chip,
+		uint8_t speed
 		)
 {
-	uint8_t mask, threshold, output_index;
-	threshold = (end_chip - start_chip) + 1; // Threshold for managing output matrix
-	output_index = 0; 			 // Keeps track of place in output matrix
-	uint64_t input[8];			 // Place to copy input contents so that original
-						 // Pointer remains constant
-	uint8_t output[threshold][8];		 // Initialize output destination
-	for(int i = 0; i < 8; i++) 		 // Copy input contents
+	uint8_t mask, threshold;
+	uint16_t output_index, input_index;
+	threshold = (end_chip - start_chip) + 1;
+	output_index = 0;
+	input_index = 0;
+	uint8_t output[threshold][8];
+	uint8_t input[str_len][8];
+	for(uint64_t i = 0; i < str_len; i++)
 	{
-		input[i] = (*input_str)[i];
+		for(uint8_t j = 0; j < 8; j++)
+		{
+			input[i][j] = input_str[i][j];
+		}
 	}
-	for(int i = 0; i < threshold; i++)       // assign empty values to each entry in output
+	for(uint8_t i = 0; i < threshold; i++)
 	{
-		for(int j = 0; j < 8; j++)
+		for(uint8_t j = 0; j < 8; j++)
 		{
 			output[i][j] = 0x00;
 		}
 	}
-	for(uint16_t i = 0; i < 19 * str_len; i++)		//Arbitrary value that gives string enough
-								//cycles to move across string
-								//I tried mathing this and could not figure
-								//it out so I just wound up with 19 through
-								//trial and error (18 is not enough)
+	for(uint64_t i = 0; i < 8 * (threshold + str_len); i++)
 	{
 		for(uint8_t j = start_chip; j <= end_chip; j++) //For each chip in specified chip threshold
 		{
@@ -68,16 +53,20 @@ void Recursive_Scroll_Horizontal(
 				{
 					//Cycle in the leading characters from each row of input
 					//and assign to mask
-					mask = (input[k] & 0x8000000000000000ULL) >> 63;
+					mask = (input[input_index/8][k] & 0x80) >> 7;
 					//Shift output left 1 and OR with mask
 					output[0][k] = (output[0][k] << 1) | mask;
 					//Shift input left 1
-					input[k] = input[k] << 1;
+					input[input_index/8][k] = input[input_index/8][k] << 1;
 					//Write to chip
 					MAX_Chip_Send_Target(j, k + 1, output[0][k]);
 					//Delay (speed)
 					//Volatile read from RAM
-					for(volatile int i = 0; i < speed * 100; i ++) {}
+					for(volatile int i = 0; i < speed; i ++) {}
+					if( k == 7)
+					{
+						input_index = (input_index + 1) % (8 *str_len);
+					}
 				}
 				else				//Otherwise
 				{
@@ -99,47 +88,6 @@ void Recursive_Scroll_Horizontal(
 	}
 }
 
-void Recursive_Scroll_Horizontal_New(
-		uint64_t ** input_str, //Concatenated 64 bit 8 row string
-		uint8_t str_len,       //Input string length
-		uint8_t start_chip,    //Entry point for scroll animation
-		uint8_t end_chip,      //Exit point
-		uint8_t speed          //Speed for animation
-		)
-{
-	uint8_t mask, threshold, output_index;
-	threshold = (end_chip - start_chip) + 1; // Threshold for managing output matrix
-	output_index = 0; 			 // Keeps track of place in output matrix
-	uint64_t input[8];			 // Place to copy input contents so that original
-						 // Pointer remains constant
-	uint64_t output[8];		 // Initialize output destination
-	for(int i = 0; i < 8; i++) 		 // Copy input contents
-	{
-		input[i] = (*input_str)[i];
-	}
-	for(int i = 0; i < 8; i++)       // assign empty values to each entry in output
-	{
-		output[i] = 0x00;
-	}
-	for(uint16_t i = 0; i < 19 * str_len; i++)		//Arbitrary value that gives string enough
-	{
-		for(uint8_t k = 0; k < 8; k++)		//For each row in chip
-		{
-			mask = (input[k] & 0x8000000000000000ULL) >> 63;
-			input[k] = input[k] << 1;
-			output[k] = (output[k] << 1) | mask;
-			
-		}
-		for(uint8_t j = start_chip; j <= threshold; j++)
-		{
-			for(uint8_t k = 0; k < 8; k++)
-			{
-				MAX_Chip_Send_Target(j, k+1 , output[k] >> (8 * j) );
-			}
-		}
-		//for(volatile int i = 0; i < speed ; i ++) {}
-	}
-}
 void Recursive_Ripple()
 {
 }

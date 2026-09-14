@@ -19,7 +19,7 @@ int main(void)
 		MAX_Init();
 		RTC_Init();
 		RTC_SetTime(18,35,0);
-		RTC_SetDate(26,9,5,6);
+		RTC_SetDate(26,9,5,2);
 		//INIT DISPLAY TIME ANIMATION
 		struct display current_display;
 		struct animation current_animation;
@@ -29,22 +29,21 @@ int main(void)
 		t = time(NULL);
 		_display->_time = localtime(&t);
 		//Copy time into str_time
-		char str_time[8] = "        ";
-		int str_len = 8;
-		uint8_t h,m,s;
-		RTC_GetTime(&h,&m,&s);
+		char str_time[8];
+		int str_len;
 		RTC_GetStructTM(_display->_time);
+		str_len = strlen(asctime(_display->_time));
 		strncpy(str_time,asctime(_display->_time),str_len);
 		//STORE INDIVIDUAL CHARS AS A BIT ARRAYS 
-		uint8_t ** bit8_str = malloc(str_len * sizeof(uint8_t *));
+		uint8_t ** bit8_str;
 		//STORE CHARS AS 64 BIT STRING ARRAY
-		uint64_t * bit64_str = calloc(64, 8 * sizeof(uint64_t));
+		uint64_t * bit64_str;
 		//FETCH CHARS AND CONCAT 
 		String_Fetch(str_time, &bit8_str,str_len); 
-		Cat_String_864(bit8_str, bit64_str, str_len);
+		//Cat_String_64(bit8_str, bit64_str, str_len);
 		while(1)
 		{
-			Recursive_Scroll_Horizontal(&bit64_str, str_len, 0, 4, 1);
+			Recursive_Scroll_Horizontal(bit8_str, str_len, 0, 3, 1);
 		}
 }
 
