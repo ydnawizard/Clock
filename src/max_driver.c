@@ -1,7 +1,5 @@
 #include <max_driver.h>
 
-const uint8_t ROW_DICT[8] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
-
 ////////LINE CONTROL\\\\\\
 //CLOCK -> PA5
 //MOSI -> PA6
@@ -37,8 +35,6 @@ void SET_CS_LOW(void)
 }
 
 //////DRIVER LOGIC\\\\\\\\
-
-
 //Generates packet signal and controls CLK
 //The MAX7219 reads the rising end of the CLK so
 //this sends a 16 bit packet down the MOSI line
@@ -94,6 +90,7 @@ void MAX_Chip_Send_Target(
 	SET_CS_HIGH();
 }
 
+//Sends data to specific row on all matrices
 void MAX_Chip_Send_All(uint8_t row_addr, uint8_t data)
 {
 	SET_CS_LOW();

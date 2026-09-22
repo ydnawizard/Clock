@@ -8,19 +8,35 @@
 
 typedef struct animation
 {
-	int phase_count;
+	int effect_count;
 	int * effect_sequence;
-	char ** string_sequence;
-	int ** modifiers;
+	int * duration;
+	int font;
+	char * string;
 } animation;
 
-void String_Fetch(
+typedef struct animation_sequence
+{
+	int sequence_index;
+	struct animation * procession;
+} animation_sequence;
+
+void string_fetch(
 		char * input_str,
 		uint8_t *** output_str,
 		uint8_t str_len
 		);
 
-void Recursive_Scroll_Horizontal(
+void animation_create(
+		int effect_count,
+		int * effect_sequence,
+		int * duration,
+		int font,
+		char * string,
+		animation * target
+		);
+
+void recursive_scroll_horizontal(
 		uint8_t ** input_str,
 		uint8_t str_len,
 		uint8_t start_chip,
@@ -29,7 +45,7 @@ void Recursive_Scroll_Horizontal(
 		);
 
 
-void Recursive_Ripple(
+void recursive_ripple(
 		);
 
 #endif //ANIMATION_H_

@@ -1,7 +1,8 @@
 #include "animation.h"
 
 //Translates input string into characters from specified font
-void String_Fetch(char * input_str, uint8_t *** output_str, uint8_t str_len)
+//Allocates space for string
+void string_fetch(char * input_str, uint8_t *** output_str, uint8_t str_len)
 {
 	(*output_str) = malloc(str_len * sizeof(uint8_t *));
 	for(uint8_t i = 0; i < str_len; i++)
@@ -14,7 +15,18 @@ void String_Fetch(char * input_str, uint8_t *** output_str, uint8_t str_len)
 	}
 }
 
-void Recursive_Scroll_Horizontal(
+void animation_create(
+		int effect_count,
+		int * effect_sequence,
+		int * duration,
+		int font,
+		char * string,
+		animation * target
+		)
+{
+}
+
+void recursive_scroll_horizontal(
 		uint8_t ** input_str,
 		uint8_t str_len,
 		uint8_t start_chip,
@@ -88,6 +100,6 @@ void Recursive_Scroll_Horizontal(
 	}
 }
 
-void Recursive_Ripple()
+void recursive_ripple()
 {
 }

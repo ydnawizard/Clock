@@ -11,7 +11,7 @@ void RTC_SetTime(uint8_t hours, uint8_t minutes, uint8_t seconds);
 void RTC_GetTime(uint8_t *hours, uint8_t *minutes, uint8_t *seconds);
 void RTC_GetDate(uint8_t *year, uint8_t *month, uint8_t *day);
 void RTC_GetStructTM(struct tm *out_time);
-void RTC_SetDate(uint8_t year, uint8_t month, uint8_t day, uint8_t weekday);
+void RTC_SetDate(uint16_t year, uint8_t month, uint8_t day, uint8_t weekday);
 
 
 #endif //RTC_DRIVER_

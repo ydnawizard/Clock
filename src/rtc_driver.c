@@ -78,7 +78,7 @@ void RTC_SetTime(uint8_t hours, uint8_t minutes, uint8_t seconds) {
     RTC->WPR = 0xFF;
 }
 
-void RTC_SetDate(uint8_t year, uint8_t month, uint8_t day, uint8_t weekday)
+void RTC_SetDate(uint16_t year, uint8_t month, uint8_t day, uint8_t weekday)
 {
     // weekday:
     // 1 = Monday

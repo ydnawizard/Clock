@@ -19,31 +19,37 @@ int main(void)
 		MAX_Init();
 		RTC_Init();
 		RTC_SetTime(18,35,0);
-		RTC_SetDate(26,9,5,2);
-		//INIT DISPLAY TIME ANIMATION
+		RTC_SetDate(2026,9,5,1);
+		//INIT DISPLAY
 		struct display current_display;
-		struct animation current_animation;
 		struct display * _display = &current_display;
+		//INIT ANIMATION
+		struct animation time_animation;
+		time_animation.effect_count = 1;
+		time_animation.font = 0;
+		time_animation.string = malloc(sizeof("17:O2 Tue Sep 22 2O26"));
+		time_animation.string = "17:O2 Tue Sep 22 2O26";
+		struct animation_sequence current_animation_sequence;
+		current_animation_sequence.procession = malloc(1 * sizeof(animation));
+		current_animation_sequence.procession[0]  = time_animation;
+		_display->_animation_sequence = &current_animation_sequence;
+		//INIT TIME
 		struct tm current_time;
 		time_t t;
 		t = time(NULL);
 		_display->_time = localtime(&t);
 		//Copy time into str_time
-		char str_time[8];
-		int str_len;
-		RTC_GetStructTM(_display->_time);
-		str_len = strlen(asctime(_display->_time));
-		strncpy(str_time,asctime(_display->_time),str_len);
+		char str_time[15];
+		uint8_t str_len,y,m,d;
+		str_len = 21;
+		RTC_GetDate(&y,&m,&d);
 		//STORE INDIVIDUAL CHARS AS A BIT ARRAYS 
 		uint8_t ** bit8_str;
-		//STORE CHARS AS 64 BIT STRING ARRAY
-		uint64_t * bit64_str;
-		//FETCH CHARS AND CONCAT 
-		String_Fetch(str_time, &bit8_str,str_len); 
-		//Cat_String_64(bit8_str, bit64_str, str_len);
+		//FETCH CHARS FROM FONT DICT
+		string_fetch(_display->_animation_sequence->procession[0].string, &bit8_str,str_len); 
 		while(1)
 		{
-			Recursive_Scroll_Horizontal(bit8_str, str_len, 0, 3, 1);
+			recursive_scroll_horizontal(bit8_str, str_len, 0, 3, 1);
 		}
 }
 

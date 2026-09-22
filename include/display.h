@@ -8,7 +8,7 @@
 struct display
 {
 	struct tm * _time;
-	struct animation * _animation;
+	struct animation_sequence * _animation_sequence;
 };
 
 
