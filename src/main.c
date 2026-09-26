@@ -21,35 +21,30 @@ int main(void)
 		RTC_SetTime(18,35,0);
 		RTC_SetDate(2026,9,5,1);
 		//INIT DISPLAY
-		struct display current_display;
-		struct display * _display = &current_display;
+		struct dis cur_dis;
+		struct dis * _dis = &cur_dis;
 		//INIT ANIMATION
-		struct animation time_animation;
-		time_animation.effect_count = 1;
-		time_animation.font = 0;
-		time_animation.string = malloc(sizeof("17:O2 Tue Sep 22 2O26"));
-		time_animation.string = "17:O2 Tue Sep 22 2O26";
-		struct animation_sequence current_animation_sequence;
-		current_animation_sequence.procession = malloc(1 * sizeof(animation));
-		current_animation_sequence.procession[0]  = time_animation;
-		_display->_animation_sequence = &current_animation_sequence;
+		char string[64] = "17:O2 Tue Sep 22 2O26";
+		struct ani time_ani;
+		ani_init(&time_ani);
+		struct ani_seq cur_ani_seq;
+		cur_ani_seq.proc = malloc(1 * sizeof(ani));
+		cur_ani_seq.proc[0]  = time_ani;
+		_dis->_ani_seq = &cur_ani_seq;
 		//INIT TIME
 		struct tm current_time;
 		time_t t;
 		t = time(NULL);
-		_display->_time = localtime(&t);
+		_dis->_time = localtime(&t);
 		//Copy time into str_time
 		char str_time[15];
 		uint8_t str_len,y,m,d;
 		str_len = 21;
 		RTC_GetDate(&y,&m,&d);
-		//STORE INDIVIDUAL CHARS AS A BIT ARRAYS 
-		uint8_t ** bit8_str;
-		//FETCH CHARS FROM FONT DICT
-		string_fetch(_display->_animation_sequence->procession[0].string, &bit8_str,str_len); 
 		while(1)
 		{
-			recursive_scroll_horizontal(bit8_str, str_len, 0, 3, 1);
+			scroll_horizontal(&_dis->_ani_seq->proc[0]);
+			ani_str_set(&_dis->_ani_seq->proc[0],"Plastics International");
 		}
 }
 

@@ -5,11 +5,11 @@
 #include <animation.h>
 
 
-struct display
+typedef struct dis
 {
 	struct tm * _time;
-	struct animation_sequence * _animation_sequence;
-};
+	struct ani_seq * _ani_seq;
+}dis;
 
 
 

@@ -2,50 +2,60 @@
 #define ANIMATION_H_
 
 #include <stdint.h>
+#include <string.h>
 #include "fonts.h"
 #include "max_driver.h"
 #include <stdlib.h>
 
-typedef struct animation
+//Type animation *ani*
+//Holds all relevant info for any animation
+//Core type of animation functions
+//Standard input for all animation functions
+typedef struct ani
 {
-	int effect_count;
-	int * effect_sequence;
-	int * duration;
-	int font;
-	char * string;
-} animation;
+	uint8_t ani_type; //Animation type
+	uint8_t start_chip; //Display chip which effect will start on
+	uint8_t end_chip; //Display chip which effect will
+	uint8_t threshold; //Distance from start to end chipwise
+	uint8_t speed; //Animation speed
+	uint8_t duration; //Animation duration
+	uint8_t str_len; //String Length
+	uint8_t font; //String font
+	char * str; //String
+	uint8_t ** font_str; //String after font conversion
+} ani;
 
-typedef struct animation_sequence
+//Type animation sequence *ani_seq*
+//Simple way of iterating through aniations
+//Core animation controller of ulterior display type
+//found in display header
+typedef struct ani_seq
 {
-	int sequence_index;
-	struct animation * procession;
-} animation_sequence;
+	uint8_t effect_cnt; //Number of effects
+	uint8_t effect_ind; //Effect index
+	struct ani * proc; //Procession array of effect structs
+} ani_seq;
 
-void string_fetch(
-		char * input_str,
-		uint8_t *** output_str,
-		uint8_t str_len
-		);
+//Helper function
+//Takes in ani struct
+//Consults relevant font table to translate string to font
+//Font tables are constructed isomorphic to ascii
+//Allocates storage for each 8 bit int array 
+void ani_str_fetch(struct ani * _ani);
 
-void animation_create(
-		int effect_count,
-		int * effect_sequence,
-		int * duration,
-		int font,
-		char * string,
-		animation * target
-		);
+//Helper Function
 
-void recursive_scroll_horizontal(
-		uint8_t ** input_str,
-		uint8_t str_len,
-		uint8_t start_chip,
-		uint8_t end_chip,
-		uint8_t speed
-		);
+void ani_str_set(struct ani * _ani, char * str);
 
+//Basic animation init time saver 
+//Defaults to all panels, max speed, "Hello", Scroll
+//Calls str_fetch
+void ani_init(struct ani * _ani);
 
-void recursive_ripple(
-		);
+//Basic scroll left to right horizontal animation
+void scroll_horizontal(struct ani * _ani);
+
+//Ripples text up and down horizontally
+void recursive_ripple(struct ani * _ani);
 
 #endif //ANIMATION_H_

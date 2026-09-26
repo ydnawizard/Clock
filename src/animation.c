@@ -2,66 +2,83 @@
 
 //Translates input string into characters from specified font
 //Allocates space for string
-void string_fetch(char * input_str, uint8_t *** output_str, uint8_t str_len)
+void ani_str_fetch(struct ani * _ani)
 {
-	(*output_str) = malloc(str_len * sizeof(uint8_t *));
-	for(uint8_t i = 0; i < str_len; i++)
+	_ani->font_str = malloc(_ani->str_len * sizeof(uint8_t *));
+	for(uint8_t i =  0; i < _ani->str_len; i++)
 	{
-		(*output_str)[i] = malloc(8 * sizeof(uint8_t));
+		_ani->font_str[i] = malloc(8 * sizeof(uint8_t));
 		for(uint8_t k = 0; k < 8; k++)
 		{
-			(*output_str)[i][k] = standard_font_8[input_str[i] - 32][k];
+			_ani->font_str[i][k] = standard_font_8[_ani->str[i] - 32][k];
 		}
 	}
 }
 
-void animation_create(
-		int effect_count,
-		int * effect_sequence,
-		int * duration,
-		int font,
-		char * string,
-		animation * target
-		)
+void ani_init(struct ani * _ani)
 {
+	_ani->ani_type = 0;
+	_ani->start_chip = 0;
+	_ani->end_chip = 3;
+	_ani->threshold = (_ani->end_chip - _ani->start_chip) + 1;
+	_ani->speed = 1;
+	_ani->duration = 0;
+	_ani->font = 0;
+	_ani->str_len = 5;
+	_ani->str = malloc(5 * sizeof(char));
+	_ani->str = "Hello";
+	ani_str_fetch(_ani);
 }
 
-void recursive_scroll_horizontal(
-		uint8_t ** input_str,
-		uint8_t str_len,
-		uint8_t start_chip,
-		uint8_t end_chip,
-		uint8_t speed
-		)
+void ani_str_set(struct ani * _ani, char * str)
 {
-	uint8_t mask, threshold;
-	uint16_t output_index, input_index;
-	threshold = (end_chip - start_chip) + 1;
-	output_index = 0;
-	input_index = 0;
-	uint8_t output[threshold][8];
-	uint8_t input[str_len][8];
-	for(uint64_t i = 0; i < str_len; i++)
+	_ani->font_str = realloc(_ani->font_str, 0);
+	_ani->str_len = strlen(str);
+	_ani->str = str;
+	ani_str_fetch(_ani);
+}
+
+void scroll_horizontal(struct ani * _ani)
+{
+	//Init
+	uint8_t mask,
+		threshold,
+		output_index,
+		input_index = 0;
+	uint8_t output[_ani->threshold][8];
+	uint8_t input[_ani->str_len][8];
+	//Copy font string into input for mut
+	for(uint64_t i = 0; i < _ani->str_len; i++)
 	{
 		for(uint8_t j = 0; j < 8; j++)
 		{
-			input[i][j] = input_str[i][j];
+			input[i][j] = _ani->font_str[i][j];
 		}
 	}
-	for(uint8_t i = 0; i < threshold; i++)
+	//Set ouput to 0x00
+	for(uint8_t i = 0; i < _ani->threshold; i++)
 	{
 		for(uint8_t j = 0; j < 8; j++)
 		{
 			output[i][j] = 0x00;
 		}
 	}
-	for(uint64_t i = 0; i < 8 * (threshold + str_len); i++)
+	//For one entire ani cycle
+	// One cycle = First char appears to last letter dissapears
+	for(uint64_t i = 0;
+			i < 8 * (_ani->threshold + _ani->str_len);
+			i++)
 	{
-		for(uint8_t j = start_chip; j <= end_chip; j++) //For each chip in specified chip threshold
+		//For each chip in specified threshold
+		for(uint8_t j = _ani->start_chip;
+				j <= _ani->end_chip;
+				j++)
 		{
-			for(uint8_t k = 0; k < 8; k++)		//For each row in chip
+			//For each row in chip
+			for(uint8_t k = 0; k < 8; k++)
 			{
-				if(j == start_chip)		//If current chip is first chip
+				//If current Chip is first chip
+				if(j == _ani->start_chip)
 				{
 					//Cycle in the leading characters from each row of input
 					//and assign to mask
@@ -72,15 +89,17 @@ void recursive_scroll_horizontal(
 					input[input_index/8][k] = input[input_index/8][k] << 1;
 					//Write to chip
 					MAX_Chip_Send_Target(j, k + 1, output[0][k]);
-					//Delay (speed)
-					//Volatile read from RAM
-					for(volatile int i = 0; i < speed; i ++) {}
+					//If last row, update input index
 					if( k == 7)
 					{
-						input_index = (input_index + 1) % (8 *str_len);
+						input_index = (input_index + 1) % (8 *_ani->str_len);
 					}
+					//Delay (speed)
+					//Volatile read from RAM
+					for(volatile int i = 0; i < _ani->speed; i ++) {}
 				}
-				else				//Otherwise
+				//Otherwise
+				else
 				{
 					//Cycle in leading character from previous matrix
 					//and assign to mask
@@ -90,16 +109,15 @@ void recursive_scroll_horizontal(
 					//Write to chip
 					MAX_Chip_Send_Target(j, k+1 , output[output_index][k]);
 					//Delay
-					for(volatile int i = 0; i < speed ; i ++) {}
+					for(volatile int i = 0; i < _ani->speed ; i ++) {}
 				}
 			}
 			//increment output index mod threshold
 			//Mod ensures output increments in cycles of threshold
-			output_index = (output_index + 1) % threshold;
+			output_index = (output_index + 1) % _ani->threshold;
 		}
 	}
 }
-
-void recursive_ripple()
+void recursive_ripple(struct ani * _ani)
 {
 }
