@@ -34,6 +34,9 @@ make it marketable as well.
 **Gallery**
 
 
-https://github.com/user-attachments/assets/2555cd49-ae5e-48f4-b08c-38aaa633b73b
+<img width="3000" height="4000" alt="29791782-f466-4ef2-9650-635fc9253952" src="https://github.com/user-attachments/assets/8258721f-7f69-4dfb-adde-9545fbce8261" />
+<img width="4000" height="3000" alt="df33c48c-4b7b-4911-a202-21f9132d345b" src="https://github.com/user-attachments/assets/e0f741ae-48c4-4db0-a0a3-70c16bf7ee9f" />
+<img width="3000" height="4000" alt="clock_internals" src="https://github.com/user-attachments/assets/e5b2f09b-d1c2-462d-8200-6a9f31baa551" />
+
 
 
