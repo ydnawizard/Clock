@@ -30,4 +30,5 @@ make it marketable as well.
 **Gallery**
 ![In Action]
 
-https://github.com/ydnawizard/Clock/blob/main/gallery/function.mp4
+https://github.com/user-attachments/assets/65ba9dc0-c76c-43b4-a731-7b3c1e894cfb
+
