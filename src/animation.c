@@ -25,16 +25,22 @@ void ani_init(struct ani * _ani)
 	_ani->duration = 0;
 	_ani->font = 0;
 	_ani->str_len = 5;
-	_ani->str = malloc(5 * sizeof(char));
-	_ani->str = "Hello";
+	_ani->str = malloc(_ani->str_len * sizeof(char));
+	memcpy(_ani->str,"Hello",_ani->str_len);
 	ani_str_fetch(_ani);
 }
 
 void ani_str_set(struct ani * _ani, char * str)
 {
-	_ani->font_str = realloc(_ani->font_str, 0);
+	for(uint8_t i = 0; i < _ani->str_len; i++)
+	{
+		free(_ani->font_str[i]);
+	}
+	free(_ani->font_str);
+	_ani->font_str = NULL;
 	_ani->str_len = strlen(str);
-	_ani->str = str;
+	_ani->str = realloc(_ani->str,_ani->str_len+1);
+	memcpy(_ani->str, str,_ani->str_len);
 	ani_str_fetch(_ani);
 }
 
@@ -42,8 +48,7 @@ void scroll_horizontal(struct ani * _ani)
 {
 	//Init
 	uint8_t mask,
-		threshold,
-		output_index,
+		output_index = 0,
 		input_index = 0;
 	uint8_t output[_ani->threshold][8];
 	uint8_t input[_ani->str_len][8];

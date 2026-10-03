@@ -13,7 +13,7 @@
 int main(void)
 {
 		//INIT DRIVERS
-		GPIO_INIT_A567();
+		gpio_init_a567();
 		SET_CS_HIGH();
 		SET_CS_LOW();
 		MAX_Init();
@@ -24,7 +24,6 @@ int main(void)
 		struct dis cur_dis;
 		struct dis * _dis = &cur_dis;
 		//INIT ANIMATION
-		char string[64] = "17:O2 Tue Sep 22 2O26";
 		struct ani time_ani;
 		ani_init(&time_ani);
 		struct ani_seq cur_ani_seq;
@@ -41,10 +40,11 @@ int main(void)
 		uint8_t str_len,y,m,d;
 		str_len = 21;
 		RTC_GetDate(&y,&m,&d);
+		ani_str_set(&_dis->_ani_seq->proc[0],"1O:O5 am CST Sat Oct O3 2O26");
 		while(1)
 		{
 			scroll_horizontal(&_dis->_ani_seq->proc[0]);
-			ani_str_set(&_dis->_ani_seq->proc[0],"Plastics International");
+			//ani_str_set(&_dis->_ani_seq->proc[0],"International");
 		}
 }
 

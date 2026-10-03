@@ -8,15 +8,18 @@
 #include "stm32f4xx.h"
 #include <stdint.h>
 
-void GPIO_Init(char port, uint8_t pin, uint8_t mode);
-void GPIO_Disable(char port);
-void GPIOA_Port_Number_Configure(uint8_t Pin_Number, uint8_t Mode_Cnf_Val);
-void GPIOB_Port_Number_Configure(uint8_t Port_Number, uint8_t mode);
-void GPIOC_Port_Number_Configure(uint8_t Port_Number, uint8_t mode);
-void GPIOD_Port_Number_Configure(uint8_t Port_Number, uint8_t mode);
-void GPIOE_Port_Number_Configure(uint8_t Port_Number, uint8_t mode);
-void GPIOF_Port_Number_Configure(uint8_t Port_Number, uint8_t mode);
-void GPIOG_Port_Number_Configure(uint8_t Port_Number, uint8_t mode);
-void GPIOH_Port_Number_Configure(uint8_t Port_Number, uint8_t mode);
-void GPIO_INIT_A567(void);
+static void gpio_clock_enable(GPIO_TypeDef * GPIOx);
+
+static void gpio_clock_disable(GPIO_TypeDef * GPIOx);
+
+void gpio_pin_configure(GPIO_TypeDef * GPIOx, uint8_t pin, uint8_t mode);
+
+static GPIO_TypeDef * get_gpio_port(char port);
+
+void gpio_init(char port, uint8_t pin_number, uint8_t mode);
+
+void gpio_disable(char port);
+
+void gpio_init_a567(void);
+
 #endif
