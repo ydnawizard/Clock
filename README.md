@@ -32,8 +32,6 @@ make it marketable as well.
 - [ ] Basic IOS App
 
 **Gallery**
-![In Action]
-
 
 
 https://github.com/user-attachments/assets/2555cd49-ae5e-48f4-b08c-38aaa633b73b
