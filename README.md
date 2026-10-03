@@ -1,3 +1,7 @@
+
+
+
+
 # Bare Metal C Clock Project
 I wanted to learn bare metal C so as an introductory project I set out to
 build a clock. This project does not make use of any existing HAL, it only uses
@@ -30,5 +34,8 @@ make it marketable as well.
 **Gallery**
 ![In Action]
 
-https://github.com/user-attachments/assets/65ba9dc0-c76c-43b4-a731-7b3c1e894cfb
+
+
+https://github.com/user-attachments/assets/2555cd49-ae5e-48f4-b08c-38aaa633b73b
+
 
