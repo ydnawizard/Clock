@@ -28,4 +28,6 @@ make it marketable as well.
 - [ ] Basic IOS App
 
 **Gallery**
-![In Action](./gallery/function.mp4)
+![In Action]
+
+https://github.com/ydnawizard/Clock/blob/main/gallery/function.mp4
