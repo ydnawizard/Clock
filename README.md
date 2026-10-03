@@ -13,7 +13,7 @@ CMSIS.
 - STLink Flash Port
 - USB C port
 - 3D printed chassis
-- Combinatoric Animations
+- Combinatorial Animations
 - Different Fonts/Sizes
 - Speaker(s)
 - HM-10 Bluetooth Module
