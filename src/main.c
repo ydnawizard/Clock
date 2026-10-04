@@ -15,6 +15,7 @@ int main(void)
 {
 		//INIT DRIVERS
 		gpio_init_targets();
+		usart_init_targets();
 		SET_CS_HIGH();
 		SET_CS_LOW();
 		MAX_Init();
@@ -42,7 +43,8 @@ int main(void)
 		str_len = 21;
 		RTC_GetDate(&y,&m,&d);
 		ani_str_set(&_dis->_ani_seq->proc[0],"1O:O5 am CST Sat Oct O3 2O26");
-		//usart1_send_str("AT");
+		usart1_send_str("AT+PIO11\r\n");
+		ani_str_set(&_dis->_ani_seq->proc[0],(char *)usart1_read_char());
 		while(1)
 		{
 			scroll_horizontal(&_dis->_ani_seq->proc[0]);

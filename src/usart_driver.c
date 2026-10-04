@@ -55,3 +55,8 @@ void usart1_send_str(const char *str) {
         usart1_send_char(*str++);
     }
 }
+
+void usart_init_targets()
+{
+	usart_config(USART1, 104, 3, 1, 1);
+}
