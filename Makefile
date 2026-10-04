@@ -22,6 +22,7 @@ BUILD_DIR = obj
 C_SRCS = \
 	$(SRC_DIR)/main.c \
 	$(SRC_DIR)/gpio_driver.c \
+	$(SRC_DIR)/usart_driver.c \
 	$(SRC_DIR)/max_driver.c \
 	$(SRC_DIR)/animation.c \
 	$(SRC_DIR)/fonts.c \
@@ -52,13 +53,15 @@ CFLAGS = $(CPU) -g -O0 -Wall -Wextra \
 	 -I CMSIS/Core/Include \
 	 -I CMSIS/Device/ST/STM32F4xx/Include \
 	 -I ./CMSIS/ \
-	 -DSTM32F401xC
+	 -DSTM32F401xC \
+	 -mthumb
 
 # Updated to STM32F401xC Linker Script
 LDFLAGS = $(CPU) -TSTM32F401XC_FLASH.ld \
 	  -Wl,--gc-sections \
 	  -specs=nano.specs -specs=nosys.specs \
-	  -nostartfiles
+	  -nostartfiles \
+	  -mthumb
 
 # ==============================================================================
 # Build Rules

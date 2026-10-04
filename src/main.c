@@ -1,4 +1,5 @@
 #include <gpio_driver.h>
+#include <usart_driver.h>
 #include <max_driver.h>
 #include <rtc_driver.h>
 #include <animation.h>
@@ -13,7 +14,7 @@
 int main(void)
 {
 		//INIT DRIVERS
-		gpio_init_a567();
+		gpio_init_targets();
 		SET_CS_HIGH();
 		SET_CS_LOW();
 		MAX_Init();
@@ -41,6 +42,7 @@ int main(void)
 		str_len = 21;
 		RTC_GetDate(&y,&m,&d);
 		ani_str_set(&_dis->_ani_seq->proc[0],"1O:O5 am CST Sat Oct O3 2O26");
+		//usart1_send_str("AT");
 		while(1)
 		{
 			scroll_horizontal(&_dis->_ani_seq->proc[0]);

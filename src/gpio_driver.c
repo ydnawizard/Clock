@@ -1,21 +1,5 @@
-#include "stm32f4xx.h"
-#include <stddef.h>
-
-// RCC AHB1 Enable Bit Masks (STM32F401 supports GPIO Ports A, B, C, D, E, H)
-#define GPIOAEN         (1U << 0)
-#define GPIOBEN         (1U << 1)
-#define GPIOCEN         (1U << 2)
-#define GPIODEN         (1U << 3)
-#define GPIOEEN         (1U << 4)
-#define GPIOHEN         (1U << 7)
-
-// Pin Modes for STM32F4 MODER
-#define GPIO_MODE_INPUT     0x00U  // 00: Input
-#define GPIO_MODE_OUTPUT    0x01U  // 01: General purpose output
-#define GPIO_MODE_ALT       0x02U  // 10: Alternate function
-#define GPIO_MODE_ANALOG    0x03U  // 11: Analog mode
-
-static void gpio_clock_enable(GPIO_TypeDef *GPIOx)
+#include "gpio_driver.h"
+static void gpio_clock_en(GPIO_TypeDef *GPIOx)
 {
     if (GPIOx == GPIOA)      RCC->AHB1ENR |= GPIOAEN;
     else if (GPIOx == GPIOB) RCC->AHB1ENR |= GPIOBEN;
@@ -25,7 +9,7 @@ static void gpio_clock_enable(GPIO_TypeDef *GPIOx)
     else if (GPIOx == GPIOH) RCC->AHB1ENR |= GPIOHEN;
 }
 
-static void gpio_clock_disable(GPIO_TypeDef *GPIOx)
+static void gpio_clock_ds(GPIO_TypeDef *GPIOx)
 {
     if (GPIOx == GPIOA)      RCC->AHB1ENR &= ~GPIOAEN;
     else if (GPIOx == GPIOB) RCC->AHB1ENR &= ~GPIOBEN;
@@ -35,20 +19,37 @@ static void gpio_clock_disable(GPIO_TypeDef *GPIOx)
     else if (GPIOx == GPIOH) RCC->AHB1ENR &= ~GPIOHEN;
 }
 
-void gpio_pin_configure(GPIO_TypeDef *GPIOx, uint8_t pin, uint8_t mode)
+void gpio_pin_cfg(GPIO_TypeDef *GPIOx, uint8_t pin, uint8_t speed, uint8_t mode)
 {
     if (pin > 15) return;
 
     //Ensure clock for the peripheral is enabled
-    gpio_clock_enable(GPIOx);
+    gpio_clock_en(GPIOx);
 
     //Configure Pin Mode in MODER (2 bits per pin)
     uint8_t shift = pin * 2;
     GPIOx->MODER &= ~(0x3U << shift);          // Clear 2-bit mode field
     GPIOx->MODER |= ((uint32_t)mode << shift);  // Set new mode value
+    GPIOx->OSPEEDR &= ~(0x3U << shift);
+    GPIOx->OSPEEDR |= (((uint32_t)speed & 0x3U) << shift);
+   
 }
 
-static GPIO_TypeDef* get_gpio_port(char port)
+void gpio_pin_alt_cfg(GPIO_TypeDef * GPIOx, uint8_t pin, uint8_t function)
+{
+	if(pin == 0)
+	{
+		GPIOx->AFR[1] &= ~(0xF << GPIO_AFRL_AFSEL0_Pos);
+		GPIOx->AFR[1] |= (function << GPIO_AFRL_AFSEL0_Pos);
+	}
+	else if(pin == 1)
+	{
+		GPIOx->AFR[1] &= ~(0xF << GPIO_AFRL_AFSEL1_Pos);
+		GPIOx->AFR[1] |= (function << GPIO_AFRL_AFSEL1_Pos);
+	}
+}
+
+static GPIO_TypeDef * gpio_get_port(char port)
 {
     switch(port) {
         case 'a': case 'A': return GPIOA;
@@ -62,26 +63,31 @@ static GPIO_TypeDef* get_gpio_port(char port)
 }
 
 // Configures pin mode given a port char ('a'-'h'), pin number (0-15), and mode (0-3)
-void gpio_init(char port, uint8_t pin_number, uint8_t mode)
+void gpio_init(char port, uint8_t pin_number, uint8_t speed, uint8_t mode)
 {
-    GPIO_TypeDef *GPIOx = get_gpio_port(port);
+    GPIO_TypeDef *GPIOx = gpio_get_port(port);
     if (GPIOx != NULL) {
-        gpio_pin_configure(GPIOx, pin_number, mode);
+        gpio_pin_cfg(GPIOx, pin_number, speed, mode);
     }
 }
 
 // Disables peripheral clock for a port
-void gpio_disable(char port)
+void gpio_ds(char port)
 {
-    GPIO_TypeDef *GPIOx = get_gpio_port(port);
+    GPIO_TypeDef *GPIOx = gpio_get_port(port);
     if (GPIOx != NULL) {
-        gpio_clock_disable(GPIOx);
+        gpio_clock_ds(GPIOx);
     }
 }
 
-void gpio_init_a567(void)
+//Initialize gpio ports used for SPI and USART
+void gpio_init_targets(void)
 {
-    gpio_pin_configure(GPIOA, 5, GPIO_MODE_OUTPUT);
-    gpio_pin_configure(GPIOA, 6, GPIO_MODE_OUTPUT);
-    gpio_pin_configure(GPIOA, 7, GPIO_MODE_OUTPUT);
+    gpio_pin_cfg(GPIOA, 5,3, GPIO_MODE_OUTPUT);
+    gpio_pin_cfg(GPIOA, 6,3, GPIO_MODE_OUTPUT);
+    gpio_pin_cfg(GPIOA, 7,3, GPIO_MODE_OUTPUT);
+    gpio_pin_cfg(GPIOA, 0,3, GPIO_MODE_ALT);
+    gpio_pin_cfg(GPIOA, 1,3, GPIO_MODE_ALT);
+    gpio_pin_alt_cfg(GPIOA,0,7);
+    gpio_pin_alt_cfg(GPIOA,1,7);
 }
